@@ -106,6 +106,7 @@ public class Simulation {
     }
 
     private void setupTurtles() {
+        int max_wealth = 0;
         turtles = new Turtle[Params.NUM_PEOPLE];
         for (int i = 0; i < Params.NUM_PEOPLE; i++)
             turtles[i] = new Turtle();
@@ -113,7 +114,11 @@ public class Simulation {
             int x = t.location.getX();
             int y = t.location.getY();
             field[x][y].turtles_here.add(t);
+            if (t.getWealth() > max_wealth )
+                max_wealth = t.getWealth();
         }
+        updateTurtlesClass(max_wealth);
+
     }
 
     private void turnTowardGrain(Coordinate loc, int vision) {
@@ -138,8 +143,26 @@ public class Simulation {
 
     }
 
+    private void updateTurtlesClass(int max_wealth) {
+        for (Turtle t: turtles) {
+            Params.WealthClass currentClass = t.updateTurtleClass(max_wealth);
+            switch (currentClass) {
+                case RICH:
+                    count_rich ++;
+                    break;
+                case MIDDLE:
+                    count_middle ++;
+                    break;
+                case POOR:
+                    count_poor ++;
+                    break;
+            }
 
-    public void go() {
+        }
+    }
+
+
+    void go() {
         ticks ++;
         count_rich = 0;
         count_middle = 0;
@@ -171,21 +194,7 @@ public class Simulation {
             field[loc.getX()][loc.getY()].turtles_here.add(t);
         }
 
-        for (Turtle t: turtles) {
-            Params.WealthClass currentClass = t.updateTurtleClass(max_wealth);
-            switch (currentClass) {
-                case RICH:
-                    count_rich ++;
-                    break;
-                case MIDDLE:
-                    count_middle ++;
-                    break;
-                case POOR:
-                    count_poor ++;
-                    break;
-            }
-
-        }
+        updateTurtlesClass(max_wealth);
 
         // update Gini-index
         for (int i = 0; i < Params.NUM_PEOPLE; ++i) {
@@ -198,19 +207,19 @@ public class Simulation {
     }
 
 
-    public int getCount_rich() {
+    int getCount_rich() {
         return count_rich;
     }
 
-    public int getCount_middle() {
+    int getCount_middle() {
         return count_middle;
     }
 
-    public int getCount_poor() {
+    int getCount_poor() {
         return count_poor;
     }
 
-    public double getGini_index() {
+    double getGini_index() {
         return gini_index;
     }
 }

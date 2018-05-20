@@ -13,16 +13,16 @@ public class Turtle implements Comparable<Turtle> {
     private int metabolism;
     private int vision;
     private Params.WealthClass turtle_class;
-    public Coordinate location;
+    Coordinate location;
 
-    public Turtle() {
+    Turtle() {
         setInitTurtleVars();
         location = new Coordinate();
         Random random = new Random();
         age = random.nextInt(life_expectancy);
     }
 
-    public void setInitTurtleVars() {
+    private void setInitTurtleVars() {
         Random random = new Random();
         age = 0;
         life_expectancy = Params.getRandomLifeExpectancy();
@@ -31,11 +31,25 @@ public class Turtle implements Comparable<Turtle> {
         wealth = metabolism + random.nextInt(50);
     }
 
-    public void addHarvest(int share) {
-        this.wealth += share;
+    void addHarvest(int share) {
+        double tax_rate = 0;
+        if (Params.TAX_MODE) {
+            switch (this.turtle_class) {
+                case RICH:
+                    tax_rate = Params.TAX_RATE_RICH;
+                    break;
+                case MIDDLE:
+                    tax_rate = Params.TAX_RATE_MIDDLE;
+                    break;
+                case POOR:
+                    tax_rate = Params.TAX_RATE_POOR;
+                    break;
+            }
+        }
+        this.wealth += (1-tax_rate) * share;
     }
 
-    public Params.WealthClass updateTurtleClass(int max_wealth) {
+    Params.WealthClass updateTurtleClass(int max_wealth) {
         if (wealth <= max_wealth / 3)
             turtle_class = Params.WealthClass.POOR;
         else if (wealth <= max_wealth * 2 / 3)
@@ -45,7 +59,7 @@ public class Turtle implements Comparable<Turtle> {
         return  turtle_class;
     }
 
-    public int moveEatAgeDie() {
+    int moveEatAgeDie() {
         location.step();
         wealth -= metabolism;
         age ++;
@@ -54,11 +68,11 @@ public class Turtle implements Comparable<Turtle> {
         return wealth;
     }
 
-    public int getVision() {
+    int getVision() {
         return vision;
     }
 
-    public int getWealth() {
+    int getWealth() {
         return wealth;
     }
 

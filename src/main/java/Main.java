@@ -27,7 +27,7 @@ public class Main {
 
         options.addOption( "q", "quiet", false, "work in silence" );
         optionGroup.addOption(new Option( "h",  "help", false,"print this message" ));
-        optionGroup.addOption(new Option( "D", "defaults", false, "run simulation with default parameters" ));
+        optionGroup.addOption(new Option( "r",  "run", false,"run the simulation with default parameters" ));
         optionGroup.addOption(Option.builder().longOpt("show-defaults")
                 .desc("print default parameters")
                 .build());
@@ -46,6 +46,9 @@ public class Main {
                 .hasArg()
                 .argName("TICKS")
                 .type(Number.class)
+                .build());
+        options.addOption(Option.builder().longOpt("with-tax")
+                .desc("enable tax mode")
                 .build());
         options.addOptionGroup(optionGroup);
 
@@ -78,6 +81,10 @@ public class Main {
 
             if( line.hasOption( "ticks" ) ) {
                 ticks = ((Number) line.getParsedOptionValue("ticks")).intValue();
+            }
+
+            if (line.hasOption("with-tax")) {
+                Params.TAX_MODE = true;
             }
 
             if (line.hasOption("output")) {
@@ -158,7 +165,10 @@ public class Main {
         System.out.println("METABOLISM_MAX = " + Params.METABOLISM_MAX);
         System.out.println("MAX_VISION = " + Params.MAX_VISION);
         System.out.println("GRAIN_GROWTH_INTERVAL = " + Params.GRAIN_GROWTH_INTERVAL);
-        System.out.println("NUM_GRAIN_GROWN = " + Params.NUM_GRAIN_GROWN);
+        System.out.println("TAX_MODE = " + Params.TAX_MODE);
+        System.out.println("TAX_RATE_RICH = " + Params.TAX_RATE_RICH);
+        System.out.println("TAX_RATE_MIDDLE = " + Params.TAX_RATE_MIDDLE);
+        System.out.println("TAX_RATE_POOR = " + Params.TAX_RATE_POOR);
     }
 
     private static boolean parseConfig() {
@@ -192,6 +202,14 @@ public class Main {
                 Params.GRAIN_GROWTH_INTERVAL = Integer.parseInt(properties.getProperty("GRAIN_GROWTH_INTERVAL"));
             if (properties.getProperty("NUM_GRAIN_GROWN") != null)
                 Params.NUM_GRAIN_GROWN = Integer.parseInt(properties.getProperty("NUM_GRAIN_GROWN"));
+            if (properties.getProperty("TAX_MODE") != null)
+                Params.TAX_MODE = Boolean.parseBoolean(properties.getProperty("TAX_MODE"));
+            if (properties.getProperty("TAX_RATE_RICH") != null)
+                Params.TAX_RATE_RICH = Double.parseDouble(properties.getProperty("TAX_RATE_RICH"));
+            if (properties.getProperty("TAX_RATE_MIDDLE") != null)
+                Params.TAX_RATE_MIDDLE = Double.parseDouble(properties.getProperty("TAX_RATE_MIDDLE"));
+            if (properties.getProperty("TAX_RATE_POOR") != null)
+                Params.TAX_RATE_POOR = Double.parseDouble(properties.getProperty("TAX_RATE_POOR"));
 
         } catch (Exception e) {
             e.printStackTrace();
