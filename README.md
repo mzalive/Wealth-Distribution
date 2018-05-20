@@ -12,11 +12,15 @@ This will compile the project and pack all the packages. The built artifact `wea
 ## Usage
 Simply Start with default model parameters:
 
-    $ java -jar wealthdist-jar-with-dependencies.jar -D
+    $ java -jar wealthdist-jar-with-dependencies.jar -r
     
 Specify how long simulation runs with `-t` arg:
 
-    $ java -jar wealthdist-jar-with-dependencies.jar -D -t 2000
+    $ java -jar wealthdist-jar-with-dependencies.jar -r -t 2000
+    
+Enable tax option with `--with-tax` arg:
+
+    $ java -jar wealthdist-jar-with-dependencies.jar -r --with-tax
     
 You can also specify a config file to pass parameters:
 
