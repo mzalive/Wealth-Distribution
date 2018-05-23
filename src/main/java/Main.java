@@ -3,6 +3,16 @@ import org.apache.commons.cli.*;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * The wrapper class of the model.
+ * Provides a CLI to configure initialise launch and interacting with the model.
+ * Default parameter/configuration stores in the Param class,
+ * Options can be fed through the CLI args.
+ * File based configuration file is also supported.
+ * When a clash raised (multiple source of a same param/conf),
+ * the system revoke the configuration in the priority of:
+ *      CLI args -> Config file -> default conf/params
+ */
 public class Main {
 
     private static Options options;
@@ -12,8 +22,6 @@ public class Main {
     private static Simulation model;
 
     public static void main(String args[]) {
-
-//        args = new String[] {};
 
         boolean hasConfig = false;
         String output_filename = "output";
@@ -111,7 +119,6 @@ public class Main {
             }
 
             // create output file
-//            output.createNewFile();
             PrintStream ps = new PrintStream(output);
             ps.println("Tick, Rich, Middle, Poor, Gini_Idx");
 
@@ -148,11 +155,17 @@ public class Main {
 
     }
 
+    /**
+     * Print the options list.
+     */
     private static void printHelp() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("wealthdist [options]", options );
     }
 
+    /**
+     * Print default params.
+     */
     private static void printDefaultParams() {
         System.out.println("Parameters: ");
         System.out.println("TICKS = " + ticks);
@@ -172,6 +185,10 @@ public class Main {
         System.out.println("TAX_RATE_POOR = " + Params.TAX_RATE_POOR);
     }
 
+    /**
+     * parse config file
+     * @return whether successfully parsed.
+     */
     private static boolean parseConfig() {
         if (verbose)
             System.out.println("Parsing Config file: " + config.getName());

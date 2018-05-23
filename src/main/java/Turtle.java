@@ -2,9 +2,6 @@ import java.util.Random;
 
 /**
  * A turtle that can represent a person.
- *
- * @author Wenzhuo Mi 818944
- *
  */
 public class Turtle implements Comparable<Turtle> {
     private int age;
@@ -22,6 +19,9 @@ public class Turtle implements Comparable<Turtle> {
         age = random.nextInt(life_expectancy);
     }
 
+    /**
+     * init the turtle.
+     */
     private void setInitTurtleVars() {
         Random random = new Random();
         age = 0;
@@ -31,8 +31,13 @@ public class Turtle implements Comparable<Turtle> {
         wealth = metabolism + random.nextInt(50);
     }
 
+    /**
+     * add wealth by value
+     * @param share
+     */
     void addHarvest(int share) {
         double tax_rate = 0;
+        // extension: Tax mode applies here
         if (Params.TAX_MODE) {
             switch (this.turtle_class) {
                 case RICH:
@@ -49,6 +54,11 @@ public class Turtle implements Comparable<Turtle> {
         this.wealth += (1-tax_rate) * share;
     }
 
+    /**
+     * update the class of the turtle given the max_wealth among the society
+     * @param max_wealth
+     * @return Updated WealthClass
+     */
     Params.WealthClass updateTurtleClass(int max_wealth) {
         if (wealth <= (double)max_wealth / 3)
             turtle_class = Params.WealthClass.POOR;
@@ -59,6 +69,10 @@ public class Turtle implements Comparable<Turtle> {
         return  turtle_class;
     }
 
+    /**
+     * Imitation of the move-eate-age-die method in NetLogo
+     * @return
+     */
     int moveEatAgeDie() {
         location.step();
         wealth -= metabolism;
@@ -80,6 +94,11 @@ public class Turtle implements Comparable<Turtle> {
         return turtle_class;
     }
 
+    /**
+     * Implement the compareTo(Class<T>) interface to make the turtle comparable in the list
+     * @param turtle
+     * @return
+     */
     public int compareTo(Turtle turtle) {
         return this.wealth - turtle.getWealth();
     }

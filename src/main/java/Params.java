@@ -1,13 +1,12 @@
 import java.util.Random;
 
 /**
- * Parameters that influence the behaviour of the system.
- *
- * @author Wenzhuo Mi 818944
+ * Stores Adjustable parameters that influence the behaviour of the system.
  *
  */
 class Params {
 
+    // the Enum for representing the wealth class of a turtle.
     public enum WealthClass {
         RICH, MIDDLE, POOR
     }
@@ -51,16 +50,19 @@ class Params {
     static double TAX_RATE_MIDDLE = 0.1;
     static double TAX_RATE_POOR = 0.0;
 
+    // generate a random life-expectancy
     static int getRandomLifeExpectancy() {
         Random random = new Random();
         return random.nextInt(LIFE_EXPECTANCY_MAX - LIFE_EXPECTANCY_MIN + 1) + LIFE_EXPECTANCY_MIN;
     }
 
+    // generate a random metabolism
     static int getRandomMetabolism() {
         Random random = new Random();
         return random.nextInt(METABOLISM_MAX) + 1;
     }
 
+    // generate a random vision
     static int getRandomVision() {
         Random random = new Random();
         return random.nextInt(MAX_VISION) + 1;

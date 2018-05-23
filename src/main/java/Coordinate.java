@@ -2,12 +2,13 @@ import java.util.Random;
 
 /**
  * A util class for representing coordinate and direction of a turtle.
- *
- * @author Wenzhuo Mi 818944
- *
+ * Can also be used for representing and simulate the transition of a location in the world
  */
- class Coordinate {
+class Coordinate {
 
+    /**
+     * Representing a direction
+     */
     public enum Direction {
         NORTH, SOUTH, WEST, EAST
     }
@@ -26,6 +27,10 @@ import java.util.Random;
         this.y = y;
     }
 
+    /**
+     * generate a random coordinate w/  random facing direction
+     * used in init a new turtle
+     */
     private void getRandomCoordinate() {
         Random random = new Random();
         x = random.nextInt(Params.WIDTH);
@@ -41,12 +46,19 @@ import java.util.Random;
         return y;
     }
 
+    /**
+     * move one step toward current facing direction
+     */
     void step() {
         Coordinate nextPos = next(1, this.face);
         this.x = nextPos.getX();
         this.y = nextPos.getY();
     }
 
+    /**
+     * generate a random facing direction
+     * @return direction
+     */
     private Direction getRandomDirection() {
         Random random = new Random();
         switch (random.nextInt(4)) {
@@ -70,6 +82,13 @@ import java.util.Random;
         return face;
     }
 
+    /**
+     * Calculate the destination coordinate of x steps towards some direction.
+     * Moving out of the bound will result in appearing at the opposite border due to World wrapping
+     * @param step
+     * @param face
+     * @return the destination coordinate
+     */
     Coordinate next(int step, Direction face) {
         int x = this.x;
         int y = this.y;
