@@ -9,6 +9,7 @@ public class Main {
     private static File config = null;
     private static boolean verbose = true;
     private static int ticks = 100;
+    private static Simulation model;
 
     public static void main(String args[]) {
 
@@ -102,7 +103,7 @@ public class Main {
             }
 
             // Create a Simulation
-            Simulation model = new Simulation();
+            model = new Simulation();
 
             if (verbose) {
                 printDefaultParams();

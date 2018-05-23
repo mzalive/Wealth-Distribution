@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -21,6 +22,7 @@ public class Simulation {
     public Simulation() {
         setupPatches();
         setupTurtles();
+        update_gini_index();
     }
 
     private void setupPatches() {
@@ -47,62 +49,79 @@ public class Simulation {
                 for (int y = 0; y < Params.HEIGHT; y++) {
                     if (field[x][y].getMax_grain_here() > 0) {
                         field[x][y].setGrain_here(field[x][y].getMax_grain_here());
-                        diffuse(x, y);
                     }
                 }
             }
+            diffuse(0.25);
         }
 
         // spread more
         for (int i = 0; i < 10; i++) {
-            for (int x = 0; x < Params.WIDTH; x++) {
-                for (int y = 0; y < Params.HEIGHT; y++)
-                    diffuse(x, y);
-            }
+            diffuse(0.25);
         }
 
         // fix max_grain_here and fraction
         for (Patch[] a: field) {
             for (Patch p : a) {
                 p.setGrain_here(Math.floor(p.getGrain_here()));
-                p.setMax_grain_here(p.getGrain_here());
+                p.setMax_grain_here((int)p.getGrain_here());
             }
         }
 
+
+
     }
 
-    private void diffuse(int x, int y) {
-        double grain_here = field[x][y].getGrain_here();
-        double pie = grain_here * 0.25;
-        double share = pie / 8;
+    private Patch getPatchByCoordinate(Coordinate coordinate) {
+        int x = coordinate.getX();
+        int y = coordinate.getY();
+        return field[x][y];
+    }
 
-        // diffuse
-        field[x][y].addGrain_here(-pie);
+    private void diffuse(double rate) {
 
-        // W
-        if (x > 0)
-            field[x-1][y].addGrain_here(share);
-        // E
-        if (x + 1 < Params.WIDTH)
-            field[x+1][y].addGrain_here(share);
-        // S
-        if (y > 0)
-            field[x][y-1].addGrain_here(share);
-        // N
-        if (y + 1 < Params.WIDTH)
-            field[x][y+1].addGrain_here(share);
-        // NW
-        if (x > 0 && y > 0)
-            field[x-1][y-1].addGrain_here(share);
-        // SW
-        if (x > 0 && y + 1 < Params.HEIGHT)
-            field[x-1][y+1].addGrain_here(share);
-        // NE
-        if (x + 1 < Params.WIDTH && y > 0)
-            field[x+1][y-1].addGrain_here(share);
-        // SE
-        if (x + 1 < Params.WIDTH && y + 1 < Params.HEIGHT)
-            field[x+1][y+1].addGrain_here(share);
+        double pies[][] = new double[Params.WIDTH][Params.HEIGHT];
+
+        for (int x = 0; x < Params.WIDTH; x++) {
+            for (int y = 0; y < Params.HEIGHT; y++) {
+                double grain_here = field[x][y].getGrain_here();
+                pies[x][y] = grain_here * rate;
+                field[x][y].setGrain_here(grain_here * (1 - rate));
+            }
+        }
+
+        for (int x = 0; x < Params.WIDTH; x++) {
+            for (int y = 0; y < Params.HEIGHT; y++) {
+                if (pies[x][y] > 0) {
+                    double share = pies[x][y] / 8;
+                    Coordinate base = new Coordinate(x, y);
+                    // N, S, W, E
+                    for (Coordinate.Direction face: Coordinate.Direction.values())
+                        getPatchByCoordinate(base.next(1, face)).addGrain_here(share);
+                    // NE
+                    getPatchByCoordinate(base
+                            .next(1, Coordinate.Direction.NORTH)
+                            .next(1, Coordinate.Direction.EAST))
+                            .addGrain_here(share);
+                    // NW
+                    getPatchByCoordinate(base
+                            .next(1, Coordinate.Direction.NORTH)
+                            .next(1, Coordinate.Direction.WEST))
+                            .addGrain_here(share);
+                    // SE
+                    getPatchByCoordinate(base
+                            .next(1, Coordinate.Direction.SOUTH)
+                            .next(1, Coordinate.Direction.EAST))
+                            .addGrain_here(share);
+                    // SW
+                    getPatchByCoordinate(base
+                            .next(1, Coordinate.Direction.SOUTH)
+                            .next(1, Coordinate.Direction.WEST))
+                            .addGrain_here(share);
+
+                }
+            }
+        }
     }
 
     private void setupTurtles() {
@@ -163,15 +182,11 @@ public class Simulation {
 
 
     void go() {
-        ticks ++;
         count_rich = 0;
         count_middle = 0;
         count_poor = 0;
         gini_index = 0;
         int max_wealth = 0;
-        int total_wealth = 0;
-        int wealth_sum_so_far = 0;
-        double gini_index_reserve = 0;
 
         for (Turtle t: turtles) {
             turnTowardGrain(t.location, t.getVision());
@@ -187,7 +202,6 @@ public class Simulation {
 
         for (Turtle t: turtles) {
             int wealth = t.moveEatAgeDie();
-            total_wealth += wealth;
             if (wealth > max_wealth)
                 max_wealth = wealth;
             Coordinate loc = t.location;
@@ -195,15 +209,26 @@ public class Simulation {
         }
 
         updateTurtlesClass(max_wealth);
+        update_gini_index();
 
+        ticks ++;
+
+    }
+
+    private void update_gini_index() {
+        int total_wealth = 0;
+        int wealth_sum_so_far = 0;
+        double gini_index_reserve = 0.0;
+        for (Turtle t: turtles) {
+            total_wealth += t.getWealth();
+        }
+        Arrays.sort(turtles);
         // update Gini-index
         for (int i = 0; i < Params.NUM_PEOPLE; ++i) {
-            Arrays.sort(turtles);
             wealth_sum_so_far += turtles[i].getWealth();
             gini_index_reserve += ((double)i + 1) / Params.NUM_PEOPLE - ((double)wealth_sum_so_far / total_wealth);
         }
         gini_index = gini_index_reserve / Params.NUM_PEOPLE / 0.5;
-
     }
 
 

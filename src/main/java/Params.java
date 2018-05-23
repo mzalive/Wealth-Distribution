@@ -13,10 +13,10 @@ class Params {
     }
 
     // The height of the field.
-    static int HEIGHT = 50;
+    static int HEIGHT = 51;
 
     // The width of the field.
-    static int WIDTH = 50;
+    static int WIDTH = 51;
 
     // The maximum amount of grain a patch can hold.
     static int MAX_GRAIN = 50;

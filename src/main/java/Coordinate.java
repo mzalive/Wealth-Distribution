@@ -6,10 +6,10 @@ import java.util.Random;
  * @author Wenzhuo Mi 818944
  *
  */
-public class Coordinate {
+ class Coordinate {
 
     public enum Direction {
-        NORTH, SOUTH, WEST, EAST;
+        NORTH, SOUTH, WEST, EAST
     }
 
     private int x_max = Params.WIDTH - 1;
@@ -17,54 +17,37 @@ public class Coordinate {
     private int x, y;
     private Direction face;
 
-    public Coordinate() {
+    Coordinate() {
         getRandomCoordinate();
     }
 
-    private Coordinate(int x, int y) {
+    Coordinate(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public void getRandomCoordinate() {
+    private void getRandomCoordinate() {
         Random random = new Random();
         x = random.nextInt(Params.WIDTH);
         y = random.nextInt(Params.HEIGHT);
         face = getRandomDirection();
     }
 
-    public int getX() {
+    int getX() {
         return x;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
-    public Coordinate step() {
-        switch (face) {
-            case NORTH:
-                y --;
-                break;
-            case SOUTH:
-                y ++;
-                break;
-            case WEST:
-                x --;
-                break;
-            case EAST:
-                x ++;
-                break;
-        }
-        if (x < 0) x = 0;
-        else if (x > x_max) x = x_max;
-        if (y < 0) y = 0;
-        else if (y > y_max) y = y_max;
-
-        return this;
+    void step() {
+        Coordinate nextPos = next(1, this.face);
+        this.x = nextPos.getX();
+        this.y = nextPos.getY();
     }
 
-    public Direction getRandomDirection() {
+    private Direction getRandomDirection() {
         Random random = new Random();
         switch (random.nextInt(4)) {
             case 0:
@@ -79,33 +62,35 @@ public class Coordinate {
         }
     }
 
-    public void setDirection(Direction direction) {
+    void setDirection(Direction direction) {
         face = direction;
     }
 
-    public Direction getDirection() {
+    Direction getDirection() {
         return face;
     }
 
-    public Coordinate next(int step, Direction face) {
+    Coordinate next(int step, Direction face) {
         int x = this.x;
         int y = this.y;
         switch (face) {
             case NORTH:
                 y -= step;
+                y = (y < 0) ? y + Params.HEIGHT : y;
                 break;
             case SOUTH:
                 y += step;
+                y = (y >= Params.HEIGHT) ? y - Params.HEIGHT : y;
                 break;
             case WEST:
                 x -= step;
+                x = (x < 0) ? x + Params.WIDTH : x;
                 break;
             case EAST:
                 x += step;
+                x = (x >= Params.WIDTH) ? x - Params.WIDTH : x;
                 break;
         }
-        if (x < 0 || y < 0 || x > x_max || y > y_max)
-            return null;
         return new Coordinate(x, y);
     }
 }

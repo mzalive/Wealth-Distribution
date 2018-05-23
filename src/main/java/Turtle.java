@@ -50,9 +50,9 @@ public class Turtle implements Comparable<Turtle> {
     }
 
     Params.WealthClass updateTurtleClass(int max_wealth) {
-        if (wealth <= max_wealth / 3)
+        if (wealth <= (double)max_wealth / 3)
             turtle_class = Params.WealthClass.POOR;
-        else if (wealth <= max_wealth * 2 / 3)
+        else if (wealth <= (double)max_wealth * 2 / 3)
             turtle_class = Params.WealthClass.MIDDLE;
         else
             turtle_class = Params.WealthClass.RICH;
