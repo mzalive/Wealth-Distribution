@@ -1,21 +1,21 @@
 #!/bin/bash
 
-cur_dir=$(pwd)
-echo $cur_dir
+cur_dir="$( cd "$( dirname "$0" )" && pwd )"
+echo "$cur_dir"
 
 function expeirement(){
-    pwd=$cur_dir
-    configdir=$cur_dir/experiment_params
-    outputdir=$cur_dir/outputs
+    pwd="$cur_dir"
+    configdir="$cur_dir/experiment_params"
+    outputdir="$cur_dir/outputs"
 
-    rm -rf $outputdir
-    mkdir $outputdir
+    rm -rf "$outputdir"
+    mkdir "$outputdir"
 
-    for file in $configdir/*.config
+    for file in "$configdir"/*.config
     do
-        echo $file
+        echo "$file"
         java -jar wealth-distribution.jar -c "$file"
-        mv *.csv outputs
+        mv *.csv "$outputdir"
     done
 }
 

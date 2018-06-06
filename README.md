@@ -15,7 +15,7 @@ The built artifact `wealthdist-jar-with-dependencies.jar` will be generated in `
 Though it's recommended to build with maven, it's still able to compile without maven.
 
     // Make sure you have permission to execute the script:
-    $ sudo chmod +x ./compile.sh
+    $ chmod +x ./compile.sh
 
     // then execute the script
     $ ./compile.sh
